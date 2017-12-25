@@ -42,4 +42,8 @@
         (recur (rest episodes))))))
 
 (defn -main [& args]
-  (download-all!))
+  (try
+    (download-all!)
+    (catch Exception e
+      (println (str "Error! Message: " (.getMessage e)))
+      (-main))))
