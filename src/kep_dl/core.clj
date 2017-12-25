@@ -25,11 +25,12 @@
       (:body req))))
 
 (defn save-file! [show]
-  (let [p (fetch-file! (:url show))
-        filename (last (s/split (:url show) #"/"))]
-    (if (not (nil? p))
-      (with-open [w (io/output-stream (str "data/" filename))]
-        (.write w p)))))
+  (let [filename (str "data/" (last (s/split (:url show) #"/")))]
+    (if-not (.exists (io/as-file filename))
+      (let [p (fetch-file! (:url show))]
+        (if-not (nil? p)
+          (with-open [w (io/output-stream filename)]
+            (.write w p)))))))
 
 (defn download-all! []
   (loop [episodes (map show-details shows)]
@@ -39,3 +40,6 @@
         (println (str "Downloading episode: " (:description (first episodes))))
         (save-file! (first episodes))
         (recur (rest episodes))))))
+
+(defn -main [& args]
+  (download-all!))
