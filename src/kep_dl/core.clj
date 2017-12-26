@@ -19,6 +19,15 @@
     (Show. (get-in details [:attrs :href])
            (first (:content details)))))
 
+(defn to-gigas [size]
+  (float (/ size 1000000000)))
+
+(defn to-megas [size]
+  (float (/ size 1000000)))
+
+(defn show-size [show]
+  (Integer. (first (nth (map :content (:content show)) 7))))
+
 (defn fetch-file! [url]
   (let [req (client/get url {:as :byte-array :throw-exceptions false})]
     (if (= (:status req) 200)
@@ -33,7 +42,7 @@
             (.write w p)))))))
 
 (defn download-all! []
-  (loop [episodes (map show-details shows)]
+  (loop [episodes (reverse (map show-details shows))]
     (if (empty? episodes)
       (println "Done!")
       (do
