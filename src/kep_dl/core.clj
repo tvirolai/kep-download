@@ -38,8 +38,10 @@
     (if-not (.exists (io/as-file filename))
       (let [p (fetch-file! (:url show))]
         (if-not (nil? p)
-          (with-open [w (io/output-stream filename)]
-            (.write w p)))))))
+          (do
+            (io/make-parents filename)
+            (with-open [w (io/output-stream filename)]
+              (.write w p))))))))
 
 (defn download-all! []
   (loop [episodes (reverse (map show-details shows))]
